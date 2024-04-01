@@ -1,10 +1,6 @@
-# update the appointments
-# import modules
 try:
-    # for Python2
     from Tkinter import *   ## notice capitalized T in Tkinter 
 except ImportError:
-    # for Python3
     from tkinter import *   ## notice lowercase 't' in tkinter here
     import tkinter as tk
 import sqlite3
@@ -16,27 +12,35 @@ c = conn.cursor()
 class App:
     def __init__(self, master):
         self.master = master
+        self.master.configure(bg='lightblue')  # Set background color for the main window
+
+        # background
+        self.canvas = Canvas(master, width=1400, height=600, bg='lightblue')
+        self.canvas.pack()
+
+        self.bg_image = PhotoImage(file="resources/images123.png")
+        self.canvas.create_image(0, 0, anchor=NW, image=self.bg_image)
+
         # heading label
-        self.heading = Label(master, text="Update Appointments",  fg='black', font=('arial 18'))
-        self.heading.place(x=180, y=40)
+        self.heading = Label(master, text="Update Appointments",  fg='black', font=('arial 18'),bg='lightblue')
+        self.heading.place(x=400, y=50)
 
         # search criteria -->name 
-        self.name = Label(master, text="Enter Patient's Name", font=('arial 12'))
-        self.name.place(x=70, y=100)
+        self.name = Label(master, text="Enter Patient's Name", font=('arial 12'),bg='lightblue')
+        self.name.place(x=300, y=100)
 
         # entry for  the name
         self.namenet = Entry(master, width=30)
-        self.namenet.place(x=300, y=100)
+        self.namenet.place(x=490, y=100)
 
         # search button
         self.search = Button(master, text="Search", width=12, height=1, bg='steelblue', command=self.search_db)
-        self.search.place(x=230, y=150)
+        self.search.place(x=300, y=180)
 
-         #back button          
+        # back button          
         self.search = Button(master, text="Back Home", width=12, height=1, bg='steelblue', command=root.destroy)
-        self.search.place(x=230, y=180)
-    
-    
+        self.search.place(x=400, y=180)
+
     # function to search
     def search_db(self):
         self.input = self.namenet.get()
@@ -53,25 +57,25 @@ class App:
             self.phone = self.row[5]
         
         # creating the update form
-        self.uname = Label(self.master, text="Patient's Name", font=('arial 12'))
+        self.uname = Label(self.master, text="Patient's Name", font=('arial 12'),bg='lightblue')
         self.uname.place(x=70, y=220)
 
-        self.uage = Label(self.master, text="Age", font=('arial 12'))
+        self.uage = Label(self.master, text="Age", font=('arial 12'),bg='lightblue')
         self.uage.place(x=70, y=260)
 
-        self.ugender = Label(self.master, text="Gender", font=('arial 12'))
+        self.ugender = Label(self.master, text="Gender", font=('arial 12'),bg='lightblue')
         self.ugender.place(x=70, y=300)
 
-        self.ulocation = Label(self.master, text="Location", font=('arial 12'))
+        self.ulocation = Label(self.master, text="Location", font=('arial 12'),bg='lightblue')
         self.ulocation.place(x=70, y=340)
 
-        self.utime = Label(self.master, text="Appointment Time (HH:MM)", font=('arial 12'))
+        self.utime = Label(self.master, text="Appointment Time (HH:MM)", font=('arial 12'),bg='lightblue')
         self.utime.place(x=70, y=380)
 
-        self.uphone = Label(self.master, text="Phone Number", font=('arial 12'))
+        self.uphone = Label(self.master, text="Phone Number", font=('arial 12'),bg='lightblue')
         self.uphone.place(x=70, y=420)
 
-        # entries for each labels==========================================================
+        # entries for each labels
         # ===================filling the search result in the entry box to update
         self.ent1 = Entry(self.master, width=30)
         self.ent1.place(x=300, y=220)
@@ -82,9 +86,7 @@ class App:
         self.ent2.insert(END, str(self.age))
 
         # gender list
-        GenderList = ["Male",
-        "Female",
-        "Transgender"]
+        GenderList = ["Male", "Female", "Transgender"]
 
         # Option menu
         self.var = tk.StringVar()
@@ -98,7 +100,6 @@ class App:
         def callback(*args):
             for i in range(len(GenderList)):
                 if GenderList[i] == self.var.get():
-                    # print(GenderList[i])
                     self.gender = GenderList[i]
                     break
         
@@ -120,7 +121,6 @@ class App:
         self.update = Button(self.master, text="Update", width=20, height=2, bg='lightblue', command=self.update_db)
         self.update.place(x=200, y=480)
     
-    
     def update_db(self):
         # declaring the variables to update
         self.var1 = self.ent1.get() #updated name
@@ -136,11 +136,36 @@ class App:
         tkinter.messagebox.showinfo("Updated", "Successfully Updated.")
 
 
+
+        # Checking for input validation
+        if not all([self.val1, self.val2, self.val3, self.val4, self.val5, self.val6]):
+            tkinter.messagebox.showwarning("Warning", "Please fill up all the details")
+        elif not self.val2.isdigit():
+            tkinter.messagebox.showwarning("Warning", "Age must be a number")
+        elif not self.val6.isdigit() or len(self.val6) != 10:
+            tkinter.messagebox.showwarning("Warning", "Phone number must be a 10-digit number")
+        else:
+            # Inserting data into the database
+            sql = "INSERT INTO 'appointments' (name, age, gender, location, scheduled_time, phone) VALUES(?, ?, ?, ?, ?, ?)"
+            c.execute(sql, (self.val1, self.val2, self.val3, self.val4, self.val5, self.val6))
+            conn.commit()
+            tkinter.messagebox.showinfo("Success", f"Appointment for {self.val1} has been created")
+
+    # Function to validate name in real-time
+    def validate_name(self, *args):
+        if not self.name_var.get().isalpha():
+            tkinter.messagebox.showerror("ERROR", "Name must contain only alphabetic characters")
+
+    # Function to validate age in real-time
+    def validate_age(self, *args):
+        if not self.age_var.get().isdigit():
+            tkinter.messagebox.showerror("ERROR", "Age must be a number")
+
 #creating the object
 root = tk.Tk()
 b = App(root)
-root.geometry("640x620+100+50")
-root.resizable(False, False)
+root.geometry("1000x620+100+50")
+root.resizable(True, False)
 root.title("Update Appointment")
 root.iconphoto(False, tk.PhotoImage(file='resources/icon.png'))
 
