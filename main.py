@@ -1,96 +1,55 @@
-import os
-import customtkinter as ctk
 import tkinter as tk
-import subprocess
+from tkinter import messagebox
 from PIL import Image, ImageTk
+import subprocess
 
-class App(ctk.CTk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class AppointmentApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Doc Appointment")
+        self.geometry("1000x620+100+50")
+        
+        # Load and resize the background image
+        image = Image.open("resources/doclogo1.png")
+        image = image.resize((1400,650), Image.LANCZOS)
+        self.background_photo = ImageTk.PhotoImage(image)
 
-ctk.set_appearance_mode("System") 
+        # Create a label with the background image
+        self.background_label = tk.Label(self, image=self.background_photo)
+        self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
 
-ctk.set_default_color_theme("green")    
- 
-appWidth, appHeight = 330,550 
+        # Buttons
+        button_font = ('Helvetica', 30)
+        buttons = [
+            ("Create Appointment", run_another_file),
+            ("View Appointment", display),
+            ("Update Appointment", update),
+            ("Delete Appointment", delete),
+        ]
 
+        # Grid buttons in one column and center them
+        for index, (button_text, command) in enumerate(buttons):
+            button = tk.Button(self, text=button_text, command=command, font=button_font, bg='lightblue')
+            button.grid(row=index, column=2, padx=20, pady=20, sticky="ew", columnspan=3)
 
+    def close_window(self):
+        self.destroy()
 
 def run_another_file():
     subprocess.run(['python', 'appointment.py'])
+
 def delete():
-    subprocess.run(['python', 'delete.py']) 
+    subprocess.run(['python', 'delete.py'])
+
 def display():
-    subprocess.run(['python', 'display.py']) 
+    subprocess.run(['python', 'display.py'])
+
 def update():
     subprocess.run(['python', 'update.py'])
-def new_func():
-        subprocess.run(['python', 'master.py'])    
-class App(ctk.CTk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
- 
-   
-     
-        # self.generateResultsButton = ctk.CTkButton(self,
-        #                                  text="Create Appointment",command = run_another_file)
-    
-        image = Image.open("resources/images.png")
-        photo = ImageTk.PhotoImage(image)
 
-        self.background_label = tk.Button(self, image=photo)
-        self.background_label.image = photo
-        self.background_label.place(relx=0, rely=0, relwidth=1, relheight=1)
-        self.background_label.grid(row=4, column=1, padx=20, pady=20,
-                                     )
-
-        self.title("Doc Appointment")
-        self.geometry(f"{appWidth}x{appHeight}")
-        self.resizable(True,False)
-
-        
-
-        self.generateResultsButton = ctk.CTkButton(self,
-                                           text="Create Appointment",
-                                           command=run_another_file,
-                                           font =('Helvetica', 30))  # Adjust the font size as needed
-        self.generateResultsButton.grid(row=5, column=1,
-                                        columnspan=2,
-                                        padx=20, pady=20,
-                                        sticky="ew")
-        self.generateResultsButton1 = ctk.CTkButton(self,
-                                         text="View Appointment",command = display,font =('Helvetica', 30))
-        self.generateResultsButton1.grid(row=6, column=1,
-                                        columnspan=2,
-                                        padx=20, pady=20,
-                                        sticky="ew")
-        self.generateResultsButton2 = ctk.CTkButton(self,command = update ,text="Update Appointment",font =('Helvetica', 30))
-        self.generateResultsButton2.grid(row=7, column=1,
-                                        columnspan=2,
-                                        padx=20, pady=20,
-                                        sticky="ew")
-        self.generateResultsButton3 = ctk.CTkButton(self,
-                                         text="Delete Appointment",command = delete,font =('Helvetica', 30))
-        self.generateResultsButton3.grid(row=8, column=1,
-                                        columnspan=2,   
-                                        padx=20, pady=20,
-                                        sticky="ew")
-        
-        self.generateResultsButton3 = ctk.CTkButton(self,
-                                         text="Back Home",command =new_func,font =('Helvetica', 30))
-        self.generateResultsButton3.grid(row=9, column=1,
-                                        columnspan=2,   
-                                        padx=20, pady=20,
-                                        sticky="ew")
-  
+# Resolution of the window
 
 
- 
-
- 
 if __name__ == "__main__":
-    app = App()
+    app = AppointmentApp()
     app.mainloop()
-
-
-    
